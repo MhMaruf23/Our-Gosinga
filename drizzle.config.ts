@@ -1,15 +1,10 @@
-import { defineConfig } from "drizzle-kit";
-
-const connectionString = process.env.DATABASE_URL;
-if (!connectionString) {
-  throw new Error("DATABASE_URL is required to run drizzle commands");
-}
-
-export default defineConfig({
-  schema: "./drizzle/schema.ts",
-  out: "./drizzle",
+// Plain config object so the file loads even when drizzle-kit is run via npx
+// without being resolvable from the project. `generate` needs no credentials.
+export default {
+  schema: "./schema.ts",
+  out: ".",
   dialect: "mysql",
   dbCredentials: {
-    url: connectionString,
+    url: process.env.DATABASE_URL ?? "",
   },
-});
+};

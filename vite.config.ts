@@ -4,7 +4,6 @@ import react from "@vitejs/plugin-react";
 import fs from "node:fs";
 import path from "node:path";
 import { defineConfig, type Plugin, type ViteDevServer } from "vite";
-import { publicPlatformScript } from "./server/_core/publicConfig";
 
 // =============================================================================
 // Manus Debug Collector - Vite Plugin
@@ -149,9 +148,12 @@ function vitePluginManusDebugCollector(): Plugin {
   };
 }
 
-// Static development and static publishing use the same public-value whitelist
-// as Express. Runtime-only secrets never enter the browser bundle. Express keeps
-// serving this path dynamically when the application server is selected.
+// The static site exposes no runtime platform values; this keeps the
+// /api/platform/config.js script tag working without a server.
+function publicPlatformScript() {
+  return "window.__PLATFORM_CONFIG__ = {};\n";
+}
+
 function vitePluginPublicPlatformConfig(): Plugin {
   return {
     name: "manus-public-platform-config",
@@ -174,14 +176,14 @@ export default defineConfig({
   plugins,
   resolve: {
     alias: {
-      "@": path.resolve(import.meta.dirname, "client", "src"),
+      "@": path.resolve(import.meta.dirname, "src"),
       "@shared": path.resolve(import.meta.dirname, "shared"),
       "@assets": path.resolve(import.meta.dirname, "attached_assets"),
     },
   },
   envDir: path.resolve(import.meta.dirname),
-  root: path.resolve(import.meta.dirname, "client"),
-  publicDir: path.resolve(import.meta.dirname, "client", "public"),
+  root: path.resolve(import.meta.dirname),
+  publicDir: path.resolve(import.meta.dirname, "public"),
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
