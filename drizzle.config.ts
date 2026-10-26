@@ -1,15 +1,14 @@
-import { defineConfig } from "drizzle-kit";
+import type { Config } from "drizzle-kit";
 
-const connectionString = process.env.DATABASE_URL;
-if (!connectionString) {
-  throw new Error("DATABASE_URL is required to run drizzle commands");
-}
+// DATABASE_URL is only needed for commands that talk to the database (migrate/push);
+// `drizzle-kit generate` works offline from the schema and snapshots.
+const connectionString = process.env.DATABASE_URL ?? "";
 
-export default defineConfig({
+export default {
   schema: "./drizzle/schema.ts",
   out: "./drizzle",
   dialect: "mysql",
   dbCredentials: {
     url: connectionString,
   },
-});
+} satisfies Config;

@@ -4,7 +4,15 @@ import react from "@vitejs/plugin-react";
 import fs from "node:fs";
 import path from "node:path";
 import { defineConfig, type Plugin, type ViteDevServer } from "vite";
-import { publicPlatformScript } from "./server/_core/publicConfig";
+
+// The server folder is optional for static builds. Load it at runtime (a variable
+// path keeps the config bundler from requiring it) and fall back to an empty script.
+const publicConfigPath = "./server/_core/publicConfig.ts";
+const { publicPlatformScript }: { publicPlatformScript: () => string } = fs.existsSync(
+  path.resolve(import.meta.dirname, publicConfigPath),
+)
+  ? await import(publicConfigPath)
+  : { publicPlatformScript: () => "/* platform config unavailable */\n" };
 
 // =============================================================================
 // Manus Debug Collector - Vite Plugin
