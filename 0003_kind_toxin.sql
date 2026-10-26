@@ -1,0 +1,1 @@
+ALTER TABLE `photo_submissions` ADD `autoPublished` boolean DEFAULT false NOT NULL;
